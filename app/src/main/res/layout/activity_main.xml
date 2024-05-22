@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.percentlayout.widget.PercentFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.percentlayout.widget.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,9 +10,50 @@
         android:id="@+id/gameBoard"
         android:layout_width="0dp"
         android:layout_height="0dp"
-
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         app:layout_widthPercent="90%"
         app:layout_aspectRatio="100%" />
 
-</androidx.percentlayout.widget.PercentFrameLayout>
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="确认"
+        app:layout_widthPercent="20%" />
+    <Button
+        android:id="@+id/btnLeft"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/btnConfirm"
+        android:layout_width="wrap_content"
+        app:layout_widthPercent="20%"
+        android:layout_height="wrap_content"
+        android:text="←" />
+    <Button
+        android:id="@+id/btnRight"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/btnLeft"
+        android:layout_width="wrap_content"
+        app:layout_widthPercent="20%"
+        android:layout_height="wrap_content"
+        android:text="→"/>
+    <Button
+        android:id="@+id/btnDown"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/btnConfirm"
+        android:layout_width="wrap_content"
+        app:layout_widthPercent="20%"
+        android:layout_height="wrap_content"
+        android:text="↓" />
+    <Button
+        android:id="@+id/btnUp"
+        android:layout_width="wrap_content"
+        app:layout_widthPercent="20%"
+        android:layout_height="wrap_content"
+        android:text="↑"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/btnDown" />
+
+</androidx.percentlayout.widget.PercentRelativeLayout>

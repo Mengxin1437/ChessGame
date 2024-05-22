@@ -28,6 +28,7 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
     private Float arrV;
     private Boolean reaction; //当前是不是你的回合
     private Chess chess;
+    public Point confirmPoint; //待确认落子的位置，x行，y列
     public MyView(@NonNull Context context) {
         super(context);
         init();
@@ -52,29 +53,34 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-//        Log.i("myview", motionEvent.getX()+" "+motionEvent.getY());
         if(motionEvent != null){
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                 if(!reaction) return false;
                 Point pos = getPos(motionEvent);
-                int x = pos.x;
-                int y = pos.y;
-
-                if(chess.isMovePositionOk(x, y)){
-                    chess.moveDown(x, y);
-                    invalidate();
-                    Boolean result = chess.isWin(x, y);
-                    if(result != null){
-                        Log.i("result", (result?"黑方":"白方") + "胜利");
-                        invalidate();
-                        reaction = false;
-                    }
-                }else{
-//            positionNotAllowedInfo();//当输入的位置不合法时的提示信息
-                }
+                confirmPoint = pos;
+                invalidate();
             }
         }
         return false;
+    }
+
+    public void dropDown(){
+        int x = confirmPoint.x;
+        int y = confirmPoint.y;
+
+        if(chess.isMovePositionOk(x, y)){
+            chess.moveDown(x, y);
+            invalidate();
+            Boolean result = chess.isWin(x, y);
+            if(result != null){
+                Log.i("result", (result?"黑方":"白方") + "胜利");
+                invalidate();
+                reaction = false;
+            }
+        }else{
+//            positionNotAllowedInfo();//当输入的位置不合法时的提示信息
+        }
+        confirmPoint = null;
     }
 
     private Point getPos(MotionEvent e){
@@ -138,6 +144,11 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
             if(chess.winner != null){
                 paint.setTextSize(50);
                 canvas.drawText(chess.winner?"黑方胜利":"白方胜利", getWidth()/2 - getWidth()/8, getWidth()/2, paint);
+            }
+            //绘制待放置棋子
+            if(confirmPoint != null) {
+                boolean turn = chess.getTurn();
+                drawChessman(canvas, turn, confirmPoint.x, confirmPoint.y);
             }
         }
     }
