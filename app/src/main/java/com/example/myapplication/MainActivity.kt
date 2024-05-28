@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private lateinit var up: Button
     private lateinit var down: Button
     private lateinit var confirm: Button
+    private lateinit var cancel: Button
     private lateinit var chess: Chess
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +33,13 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         up = findViewById(R.id.btnUp)
         down = findViewById(R.id.btnDown)
         confirm = findViewById(R.id.btnConfirm)
+        cancel = findViewById(R.id.btnCancel)
         left.setOnClickListener(this)
         right.setOnClickListener(this)
         up.setOnClickListener(this)
         down.setOnClickListener(this)
         confirm.setOnClickListener(this)
+        cancel.setOnClickListener(this)
     }
 
     override fun onClick(p0: View?) {
@@ -64,6 +67,10 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             down->{
                 if(gameBoard.confirmPoint.x < chess.board.size-1)
                     gameBoard.confirmPoint.x++
+                gameBoard.invalidate()
+            }
+            cancel->{
+                chess.cancelOneStep()
                 gameBoard.invalidate()
             }
         }

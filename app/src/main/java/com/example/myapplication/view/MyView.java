@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -103,8 +104,6 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-//        canvas.drawLine(0, 0, getWidth(), getHeight(), new Paint(Color.RED));
-
         Boolean[][] board;
         if(chess != null)
             board = chess.getBoard();
@@ -141,14 +140,15 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
                     }
                 }
             }
-            if(chess.winner != null){
-                paint.setTextSize(50);
-                canvas.drawText(chess.winner?"黑方胜利":"白方胜利", getWidth()/2 - getWidth()/8, getWidth()/2, paint);
-            }
             //绘制待放置棋子
             if(confirmPoint != null) {
                 boolean turn = chess.getTurn();
                 drawChessman(canvas, turn, confirmPoint.x, confirmPoint.y);
+            }
+            drawTriangleFlag(canvas);
+            if(chess.getWinner() != null){
+                paint.setTextSize(50);
+                canvas.drawText(chess.getWinner() ?"黑方胜利":"白方胜利", getWidth()/2 - getWidth()/8, getWidth()/2, paint);
             }
         }
     }
@@ -169,6 +169,27 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
             horizontal = getWidth() * b / column;
             g.drawLine(arrH+horizontal, arrV,
                     arrH+horizontal, arrV+getWidth()*(row-1)/(float)row, paint);
+        }
+
+        //绘制角上4个星位
+        int r = row>=9&&row<13 ? 2 : 3;
+        int c = column>=9&&column<13 ? 2 : 3;
+        drawBlackPoint(g, r, c);
+        drawBlackPoint(g, r, column-c-1);
+        drawBlackPoint(g, row-r-1, c);
+        drawBlackPoint(g, row-r-1, column-c-1);
+
+        if(row%2==1 && column%2==1){
+            //绘制天元
+            drawBlackPoint(g, row/2, column/2);
+
+            //绘制星位之间的中点
+            if(row>=15 && column>=15){
+                drawBlackPoint(g, r, column/2);
+                drawBlackPoint(g, row/2, c);
+                drawBlackPoint(g, row/2, column-c-1);
+                drawBlackPoint(g, row-r-1, column/2);
+            }
         }
     }
     /**
@@ -203,5 +224,43 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
         }
         g.drawBitmap(bn?blackChess:whiteChess, getWidth()*c/(float)column+arrH-width/2,
                 getWidth()*r/(float)row+arrV-width/2, null);
+    }
+
+    /**
+     * 绘制当前落子标识
+     */
+    private void drawTriangleFlag(Canvas g){
+        if (chess == null || chess.previousPoint==null) return;
+        int r = chess.previousPoint.x;
+        int c = chess.previousPoint.y;
+        int row = chess.getBoard().length;
+        int column = chess.getBoard()[0].length;
+        float startX = (getWidth()*c/column)+arrH;
+        float startY = (getWidth()*r/row)+arrV;
+        int width = getWidth()/Math.max(column, row);
+        Paint paint1 = new Paint();
+        paint1.setStyle(Paint.Style.FILL);
+        paint1.setColor(chess.getTurn() ? Color.BLACK : Color.WHITE);
+        Path path = new Path();
+        path.moveTo(startX, startY);
+        path.lineTo(startX+width/2, startY);
+        path.lineTo(startX, startY+width/2);
+        path.lineTo(startX, startY);
+        path.close();
+        g.drawPath(path, paint1);
+    }
+
+    /**
+     * 绘制黑圆点
+     */
+    private void drawBlackPoint(Canvas g, int r, int c){
+        Boolean[][] board = this.chess.getBoard();
+        int row = board.length;
+        int column = board[0].length;
+        Paint paint1 = new Paint();
+        paint1.setStyle(Paint.Style.FILL);
+        int radius = getWidth()/150;
+        g.drawCircle((getWidth()*c/column)+arrH,
+                (getWidth()*r/row)+arrV, radius, paint1);
     }
 }
