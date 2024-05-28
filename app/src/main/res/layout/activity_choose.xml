@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.percentlayout.widget.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChooseActivity">
+
+    <RadioGroup
+        android:id="@+id/chessType"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/online"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="五子棋" />
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="黑白棋" />
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="围棋" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/online"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/localNetwork"
+        android:layout_width="wrap_content"
+        app:layout_widthPercent="40%"
+        android:layout_height="wrap_content"
+        android:text="联机对战" />
+    <Button
+        android:id="@+id/localNetwork"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_widthPercent="40%"
+        android:text="局域网对战" />
+
+    <Button
+        android:id="@+id/machine"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/localNetwork"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_widthPercent="40%"
+        android:text="人机对局" />
+    <Button
+        android:id="@+id/practice"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/machine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_widthPercent="40%"
+        android:text="练习模式"/>
+
+</androidx.percentlayout.widget.PercentRelativeLayout>
