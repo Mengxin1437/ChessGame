@@ -6,8 +6,11 @@ import android.util.Log
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Button
+import android.widget.Toast
 import com.example.myapplication.logic.Chess
 import com.example.myapplication.logic.FiveInLine
+import com.example.myapplication.logic.Go
+import com.example.myapplication.logic.Reversi
 import com.example.myapplication.view.MyView
 
 class MainActivity : AppCompatActivity(), OnClickListener {
@@ -23,8 +26,15 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        var type = intent.getStringExtra("chessType")
+
         gameBoard = findViewById(R.id.gameBoard)
-        chess = FiveInLine()
+        chess = when(type){
+            "五子棋" -> FiveInLine()
+            "黑白棋" -> Reversi()
+            "围棋" -> Go()
+            else -> FiveInLine()
+        }
         chess.init(19, 19)
         gameBoard.setChess(chess)
 
