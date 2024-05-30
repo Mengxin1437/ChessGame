@@ -1,17 +1,20 @@
 package com.example.myapplication
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.logic.Chess
 import com.example.myapplication.logic.FiveInLine
 import com.example.myapplication.logic.Go
 import com.example.myapplication.logic.Reversi
 import com.example.myapplication.view.MyView
+import java.io.IOException
+import java.net.Socket
+
 
 class MainActivity : AppCompatActivity(), OnClickListener {
     private lateinit var gameBoard: MyView
@@ -22,13 +25,59 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private lateinit var confirm: Button
     private lateinit var cancel: Button
     private lateinit var chess: Chess
+    private lateinit var gameMod: String
+
+//    private val host = "cd.frp.one"
+//    private val port = 36680
+
+    private val host = "qhd.frp.one"
+    private val port = 18923
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val mod = intent.getStringExtra("gameMod")
+
+        var flag = ""
+        var socket: Socket? = null
+        if(mod.equals("online")){
+            val thread = Thread{
+                try {
+                    socket = Socket(host, port)
+                    //向服务器介绍自己
+//                    val outputStream = ObjectOutputStream(socket.getOutputStream())
+//                    val info = intent.getSerializableExtra("info")
+//                    Log.i("main", info.toString())
+//                    outputStream.writeObject(info)
+                    //获取猜先
+                    val b = socket!!.getInputStream().read()
+                    flag = b.toString()
+                } catch (e: IOException) {
+                    throw RuntimeException(e)
+                }
+            }
+            thread.start()
+            Toast.makeText(this, "正在等待其他人加入，请勿进行其他操作", Toast.LENGTH_LONG).show()
+            thread.join()
+        }
+
+
         var type = intent.getStringExtra("chessType")
+        gameMod = intent.getStringExtra("gameMod").toString()
 
         gameBoard = findViewById(R.id.gameBoard)
+        if(mod.equals("online")){
+            gameBoard.socket = socket;
+            if(flag.equals("0")) {
+                Toast.makeText(this, "你执白后行", Toast.LENGTH_SHORT).show()
+                gameBoard.flag = false
+            }else{
+                Toast.makeText(this, "你执黑先行", Toast.LENGTH_SHORT).show()
+                gameBoard.flag = true
+            }
+        }
         chess = when(type){
             "五子棋" -> FiveInLine()
             "黑白棋" -> Reversi()
@@ -37,6 +86,19 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         }
         chess.init(19, 19)
         gameBoard.setChess(chess)
+
+        //后台监听网络数据包
+        if(mod.equals("online")){
+            Thread{
+                while (true){
+                    val x = socket?.getInputStream()?.read()
+                    val y = socket?.getInputStream()?.read()
+                    if(x!=null && y!=null) {
+                        gameBoard.moveDownAndJudgeWin(x, y)
+                    }
+                }
+            }.start()
+        }
 
         left = findViewById(R.id.btnLeft)
         right = findViewById(R.id.btnRight)
@@ -54,6 +116,8 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
     override fun onClick(p0: View?) {
         Log.i("click", "click")
+        //不是自己方的回合，按钮一律不能点
+        if (chess.turn != gameBoard.flag) return
         when(p0){
             confirm->{
                 Log.i("click", "confirm")

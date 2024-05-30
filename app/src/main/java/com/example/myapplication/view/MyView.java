@@ -20,6 +20,10 @@ import androidx.annotation.Nullable;
 import com.example.myapplication.R;
 import com.example.myapplication.logic.Chess;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
 public class MyView extends androidx.appcompat.widget.AppCompatImageView implements View.OnTouchListener {
     private Bitmap targetBitmap;
     private Bitmap blackChess;
@@ -29,7 +33,10 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
     private Float arrV;
     private Boolean reaction; //当前是不是你的回合
     private Chess chess;
+    public Boolean flag; //先后手 1执黑先手 如果为null表示这不是联机对局
+
     public Point confirmPoint; //待确认落子的位置，x行，y列
+    public Socket socket;
     public MyView(@NonNull Context context) {
         super(context);
         init();
@@ -57,6 +64,10 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
         if(motionEvent != null){
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                 if(!reaction) return false;
+                //不是自己的回合不能落子
+                if(flag != null){
+                    if(!chess.getTurn().equals(flag)) return false;
+                }
                 Point pos = getPos(motionEvent);
                 confirmPoint = pos;
                 invalidate();
@@ -65,23 +76,49 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
         return false;
     }
 
-    public void dropDown(){
+    /**
+     * 被确认落子按钮调用
+     */
+    public void dropDown() {
         int x = confirmPoint.x;
         int y = confirmPoint.y;
 
         if(chess.isMovePositionOk(x, y)){
-            chess.moveDown(x, y);
-            invalidate();
-            Boolean result = chess.isWin(x, y);
-            if(result != null){
-                Log.i("result", (result?"黑方":"白方") + "胜利");
-                invalidate();
-                reaction = false;
-            }
-        }else{
-//            positionNotAllowedInfo();//当输入的位置不合法时的提示信息
+            moveDownAndJudgeWin(x, y);
+            sendToServer(x, y);
         }
         confirmPoint = null;
+    }
+
+    /**
+     * 落子并判断胜负
+     */
+    public void moveDownAndJudgeWin(int x, int y){
+        chess.moveDown(x, y);
+
+        Boolean result = chess.isWin(x, y);
+        if(result != null){
+            Log.i("result", (result?"黑方":"白方") + "胜利");
+            reaction = false;
+        }
+        invalidate();
+    }
+
+    /**
+     * 向服务器发送操作信息
+     */
+    private void sendToServer(int x, int y){
+        if(socket != null){
+            Log.i("myview", String.valueOf(x*100+y+" "+x+" "+y));
+            new Thread(() -> {
+                try {
+                    socket.getOutputStream().write(x);
+                    socket.getOutputStream().write(y);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }).start();
+        }
     }
 
     private Point getPos(MotionEvent e){
