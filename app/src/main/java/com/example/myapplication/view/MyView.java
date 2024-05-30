@@ -86,8 +86,9 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
         if(chess.isMovePositionOk(x, y)){
             moveDownAndJudgeWin(x, y);
             sendToServer(x, y);
+            confirmPoint = null;
         }
-        confirmPoint = null;
+
     }
 
     /**

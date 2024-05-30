@@ -1,12 +1,8 @@
 package com.example.myapplication
 
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.IBinder
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -26,7 +22,7 @@ class LoginActivity : AppCompatActivity() {
         password = findViewById(R.id.password)
         login.setOnClickListener{
             var intent = Intent(this@LoginActivity, ChooseActivity::class.java)
-            intent.putExtra("info", Message(username.text.toString(), password.text.toString()))
+            intent.putExtra("info", Message(username.text.toString(), password.text.toString(), 0))
             startActivity(intent)
         }
     }

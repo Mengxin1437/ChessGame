@@ -27,12 +27,6 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private lateinit var chess: Chess
     private lateinit var gameMod: String
 
-//    private val host = "cd.frp.one"
-//    private val port = 36680
-
-    private val host = "qhd.frp.one"
-    private val port = 18923
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,27 +34,11 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
         val mod = intent.getStringExtra("gameMod")
 
-        var flag = ""
+        var flag = intent.getStringExtra("flag")
+
         var socket: Socket? = null
         if(mod.equals("online")){
-            val thread = Thread{
-                try {
-                    socket = Socket(host, port)
-                    //向服务器介绍自己
-//                    val outputStream = ObjectOutputStream(socket.getOutputStream())
-//                    val info = intent.getSerializableExtra("info")
-//                    Log.i("main", info.toString())
-//                    outputStream.writeObject(info)
-                    //获取猜先
-                    val b = socket!!.getInputStream().read()
-                    flag = b.toString()
-                } catch (e: IOException) {
-                    throw RuntimeException(e)
-                }
-            }
-            thread.start()
-            Toast.makeText(this, "正在等待其他人加入，请勿进行其他操作", Toast.LENGTH_LONG).show()
-            thread.join()
+            socket = (application as MySocket).getSocket()
         }
 
 
@@ -92,6 +70,14 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             Thread{
                 while (true){
                     val x = socket?.getInputStream()?.read()
+                    if(x == 235){
+                        runOnUiThread {
+                            Toast.makeText(this@MainActivity, "游戏已经结束", Toast.LENGTH_SHORT).show()
+                        }
+                        Thread.sleep(1000)
+                        this@MainActivity.finish()
+                        break
+                    }
                     val y = socket?.getInputStream()?.read()
                     if(x!=null && y!=null) {
                         gameBoard.moveDownAndJudgeWin(x, y)
@@ -112,6 +98,13 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         down.setOnClickListener(this)
         confirm.setOnClickListener(this)
         cancel.setOnClickListener(this)
+    }
+
+    override fun onDestroy() {
+        val mySocket = (application as MySocket)
+        mySocket.getSocket().close()
+        mySocket.setSocket(null)
+        super.onDestroy()
     }
 
     override fun onClick(p0: View?) {
