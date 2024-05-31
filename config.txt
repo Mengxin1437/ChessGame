@@ -1,0 +1,2 @@
+ip=cd.frp.one
+port=36680
