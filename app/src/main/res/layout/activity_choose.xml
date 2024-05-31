@@ -31,23 +31,16 @@
     <Button
         android:id="@+id/online"
         android:layout_centerHorizontal="true"
-        android:layout_above="@id/localNetwork"
+        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         app:layout_widthPercent="40%"
         android:layout_height="wrap_content"
         android:text="联机对战" />
-    <Button
-        android:id="@+id/localNetwork"
-        android:layout_centerInParent="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_widthPercent="40%"
-        android:text="局域网对战" />
 
     <Button
         android:id="@+id/machine"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/localNetwork"
+        android:layout_below="@id/online"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_widthPercent="40%"

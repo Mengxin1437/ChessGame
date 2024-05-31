@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.percentlayout.widget.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LocalChooseActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/chessType"
+        android:text="由发起方选择"
+        android:textSize="15sp"/>
+    <RadioGroup
+        android:id="@+id/chessType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/launch"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="五子棋" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="黑白棋" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="围棋" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/centerFlag"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="" />
+    <Button
+        android:id="@+id/launch"
+        android:layout_width="wrap_content"
+        app:layout_widthPercent="40%"
+        android:layout_height="wrap_content"
+        app:layout_heightPercent="10%"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/centerFlag"
+        android:text="发起对局"
+        android:textSize="20sp"/>
+    <Button
+        android:id="@+id/join"
+        android:layout_width="wrap_content"
+        app:layout_widthPercent="40%"
+        android:layout_height="wrap_content"
+        app:layout_heightPercent="10%"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/centerFlag"
+        android:text="加入对局"
+        android:textSize="20sp"/>
+
+</androidx.percentlayout.widget.PercentRelativeLayout>

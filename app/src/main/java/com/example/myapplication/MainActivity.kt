@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.logic.Chess
@@ -24,49 +25,50 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private lateinit var down: Button
     private lateinit var confirm: Button
     private lateinit var cancel: Button
+    private lateinit var turnInfo: TextView
     private lateinit var chess: Chess
-    private lateinit var gameMod: String
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val mod = intent.getStringExtra("gameMod")
-
-        var flag = intent.getStringExtra("flag")
-
         var socket: Socket? = null
-        if(mod.equals("online")){
-            socket = (application as MySocket).getSocket()
+
+        val mod = (application as MyApplication).gameMod
+
+        //获取到socket对象
+        if(mod.equals("online") || mod.equals("localNetwork")){
+            socket = (application as MyApplication).socket
         }
 
-
-        var type = intent.getStringExtra("chessType")
-        gameMod = intent.getStringExtra("gameMod").toString()
+        val type = (application as MyApplication).message.chessType
 
         gameBoard = findViewById(R.id.gameBoard)
-        if(mod.equals("online")){
+        turnInfo = findViewById(R.id.turnInfo)
+        if(mod.equals("online") || mod.equals("localNetwork")){
             gameBoard.socket = socket;
-            if(flag.equals("0")) {
+            val flag = (application as MyApplication).flag
+            if(flag != null && flag.equals("0")) {
                 Toast.makeText(this, "你执白后行", Toast.LENGTH_SHORT).show()
+                turnInfo.text = "对手的回合"
                 gameBoard.flag = false
             }else{
                 Toast.makeText(this, "你执黑先行", Toast.LENGTH_SHORT).show()
+                turnInfo.text = "你的回合"
                 gameBoard.flag = true
             }
         }
         chess = when(type){
-            "五子棋" -> FiveInLine()
-            "黑白棋" -> Reversi()
-            "围棋" -> Go()
+            0 -> FiveInLine()
+            1 -> Reversi()
+            2 -> Go()
             else -> FiveInLine()
         }
         chess.init(19, 19)
         gameBoard.setChess(chess)
 
         //后台监听网络数据包
-        if(mod.equals("online")){
+        if(mod.equals("online") || mod.equals("localNetwork")){
             Thread{
                 while (true){
                     val x = socket?.getInputStream()?.read()
@@ -80,6 +82,9 @@ class MainActivity : AppCompatActivity(), OnClickListener {
                     }
                     val y = socket?.getInputStream()?.read()
                     if(x!=null && y!=null) {
+                        runOnUiThread {
+                            turnInfo.text = "你的回合"
+                        }
                         gameBoard.moveDownAndJudgeWin(x, y)
                     }
                 }
@@ -101,9 +106,9 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     }
 
     override fun onDestroy() {
-        val mySocket = (application as MySocket)
-        mySocket.getSocket().close()
-        mySocket.setSocket(null)
+        val mySocket = (application as MyApplication)
+        mySocket.socket.close()
+        mySocket.socket = null
         super.onDestroy()
     }
 
@@ -114,7 +119,8 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         when(p0){
             confirm->{
                 Log.i("click", "confirm")
-                gameBoard.dropDown() //调用落子方法
+                val b = gameBoard.dropDown() //调用落子方法
+                if(b) turnInfo.text = "对手的回合"
             }
             left->{
                 if(gameBoard.confirmPoint.y > 0)

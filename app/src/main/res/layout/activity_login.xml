@@ -44,14 +44,28 @@
             android:text="自动登录" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"/>
+
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
+        app:layout_widthPercent="33%"
         android:layout_height="wrap_content"
         android:layout_below="@id/linear"
-        android:layout_centerHorizontal="true"
+        android:layout_toStartOf="@id/tvw"
         android:text="登录"/>
-
+    <Button
+        android:id="@+id/localNetwork"
+        android:layout_width="wrap_content"
+        app:layout_widthPercent="33%"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linear"
+        android:layout_toEndOf="@id/tvw"
+        android:text="局域网对战" />
 
 
 </androidx.percentlayout.widget.PercentRelativeLayout>

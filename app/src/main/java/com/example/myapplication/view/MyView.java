@@ -78,8 +78,9 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
 
     /**
      * 被确认落子按钮调用
+     * @return true操作成功 false操作失败
      */
-    public void dropDown() {
+    public boolean dropDown() {
         int x = confirmPoint.x;
         int y = confirmPoint.y;
 
@@ -87,8 +88,9 @@ public class MyView extends androidx.appcompat.widget.AppCompatImageView impleme
             moveDownAndJudgeWin(x, y);
             sendToServer(x, y);
             confirmPoint = null;
+            return true;
         }
-
+        return false;
     }
 
     /**
